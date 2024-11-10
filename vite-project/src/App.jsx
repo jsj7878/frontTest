@@ -57,18 +57,20 @@ const App = () => {
     const ctx = canvasRef.current.getContext("2d");
     const background = backgroundRef.current;
     const video = videoRef.current;
-
+    //사람 판별
     const segmentation = await model.segmentPerson(video, {
       flipHorizontal: false,
       internalResolution: "medium",
       segmentationThreshold: 0.7,
     });
-
+    //사람 판별해서 mask를 따주고 표시
     const personMasked = bodyPix.toMask(
       segmentation,
       foregroundColor,
       backgroundColor
     );
+
+    //canvas size를 맞춰서 캠에 보이는 비율에 맞게 사진을 편집하는 코드인데 현재는 무조건 캠 화면이랑 똑같이 가기 때문에 중요도는 낮음
     const canvasWidth = 640;
     const canvasHeight = 480;
     const imgWidth = background.width;
@@ -140,7 +142,7 @@ const App = () => {
     const imageData = canvas.toDataURL("image/png");
     removeBackground(imageData);
   };
-
+  //api에 캠 화면 보내서 누끼 따는 코드 (추후 유료버전 쓸 경우 수정 필요)
   const removeBackground = async (imageData) => {
     const base64Image = imageData.split(",")[1];
     const response = await fetch("https://sdk.photoroom.com/v1/segment", {
@@ -160,7 +162,7 @@ const App = () => {
     const url = URL.createObjectURL(blob);
     setProcessedImage(url);
   };
-
+  //누끼 딴 이미지와 포스터이미지 합성해주는 코드
   const combineImages = () => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
